@@ -1,0 +1,33 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    healthcheck:
+      enabled: true
+  instance:
+    preferIpAddress: true
+
+spring:
+  application:
+    name: gateway-ms
+  cloud:
+    gateway:
+      routes:
+        - id: faty-ms
+          metadata:
+            domain: tiers
+            version: v1
+            service: faty-ms
+          uri: lb://MS-FATY
+          predicates:
+            - Path=/api/tiers/faty-ms/v1/**
+          filters:
+            - RewritePath=/api/tiers/faty-ms/v1/(?<uri>.*), /$\{uri}
+            - AddRequestHeader=X-prospect-Header,prospect-service-header
+server:
+  port: 8087
+  use-forward-headers: true
+  forward-headers-strategy: framework
+
+
+
